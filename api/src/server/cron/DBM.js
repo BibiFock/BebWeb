@@ -11,15 +11,18 @@ var debug = Debug('worker-DBM');
 module.exports = () => {
     http.get('http://www.dragonball-multiverse.com/fr/accueil.html',  function (response) {
         if ( response.statusCode != 200) {
-            debug('Url download Failed');
+            debug('Url download Failed', response.statsCode);
+            return false;
         }
+        var found = false;
 
         response.setEncoding('utf8');
         response.on('data', (chunk) => {
-            var regExp = /<img src="(\/fr\/pages\/small\/(\d+).png)/;
+            var regExp = /<img src="(\/fr\/pages\/small\/(\d+).(png|jpg))/;
             if (!regExp.test(chunk)) {
                 return false;
             }
+            found = true;
             var parse = chunk.match(regExp);
             var img = 'http://www.dragonball-multiverse.com' + parse[1];
             var data = {
@@ -56,6 +59,10 @@ module.exports = () => {
                 });
 
             });
+        }).on('end', () => {
+            if (!found) {
+                debug('parse failed');
+            }
         });
     });
 };

@@ -2,10 +2,12 @@ import path from 'path';
 import Express from 'express';
 import childProcess from 'child_process';
 import cron from 'cron';
+import mongoose from 'mongoose';
 
 import Debug from 'debug';
 
 import config from '../../config/app';
+import Feeds from '../model/feeds';
 
 import DBM from './cron/DBM';
 import OPM from './cron/OPM';
@@ -25,6 +27,28 @@ app.get('/', (req, res) => {
         res.send(stdout);
         res.end();
     });
+});
+
+app.get('/resume', (req, res) => {
+    mongoose.connect(config.db);
+    var finish = () =>  {
+        mongoose.disconnect();
+        res.end();
+    };
+
+    var feeds = Feeds.find( {}, null, {
+        sort: { format:1, date:-1}
+    }, (err, allNews) => {
+        if (err) {
+            debug ('error', err);
+            finish();
+            return;
+        }
+
+        res.json(allNews);
+        finish();
+    });
+
 });
 
 server = app.listen(config.port || 3000, () => {

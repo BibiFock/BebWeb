@@ -9,7 +9,7 @@ import Feeds from '../../model/feeds';
 var debug = Debug('worker-OPM');
 
 module.exports = () => {
-    http.get('http://tonarinoyj.jp/manga/onepanman/',  (response) => {
+    http.get('http://www.tonarinoyj.jp/manga/onepanman/',  (response) => {
         if ( response.statusCode != 200) {
             debug('Url download Failed', response.statusCode);
         }
