@@ -12,21 +12,30 @@ import Feeds from '../model/feeds';
 import DBM from './cron/DBM';
 import OPM from './cron/OPM';
 
+
 var debug = Debug('worker');
 
 var app = Express();
-var server;
+
+const PATH_STYLES = path.resolve(__dirname, '../client/styles');
+const PATH_DIST = path.resolve(__dirname, '../../dist');
+
+app.use('/styles', Express.static(PATH_STYLES));
+app.use(Express.static(PATH_DIST));
 
 app.get('/', (req, res) => {
-    childProcess.exec('fortune /home/bbr/config/fortune/quotes', (error, stdout, stderr) => {
-        if (error !== null) {
-            debug('exec ', error);
-            return false;
-        }
+    //childProcess.exec('fortune /home/bbr/config/fortune/quotes', (error, stdout, stderr) => {
+        //if (error !== null) {
+            //debug('exec ', error);
+            //return false;
+        //}
 
-        res.send(stdout);
-        res.end();
-    });
+        //res.send(stdout);
+        //res.end();
+    //});
+    //
+    //const PATH_STYLES = path.resolve(__dirname, '../client/styles');
+  res.sendFile(path.resolve(__dirname, '../client/index.html'));
 });
 
 app.get('/resume', (req, res) => {
@@ -45,13 +54,21 @@ app.get('/resume', (req, res) => {
             return;
         }
 
-        res.json(allNews);
+        var formats = {};
+        for (var i = 0; i < allNews.length; i++) {
+            if ( !formats[allNews[i].format] ) {
+                formats[allNews[i].format] = [];
+            }
+            formats[allNews[i].format].push( JSON.parse( allNews[i].data ) );
+        };
+
+        res.json(formats);
         finish();
     });
 
 });
 
-server = app.listen(config.port || 3000, () => {
+var server = app.listen(config.port || 3000, () => {
   var port = server.address().port;
 
   debug('Server is listening at %s', port);

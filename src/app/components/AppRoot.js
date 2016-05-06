@@ -1,8 +1,5 @@
 import React from 'react/addons';
 
-import DBM from './DBM.js';
-import OPM from './opm.js';
-
 /*
  * @class AppRoot
  * @extends React.Component
@@ -30,10 +27,7 @@ class AppRoot extends React.Component {
     render () {
         return <div className="appRoot row">
             <div className="small-12 columns large-expand">
-                <DBM />
-            </div>
-            <div className="small-12 columns large-expand">
-                <OPM />
+            hello
             </div>
         </div>;
     }
